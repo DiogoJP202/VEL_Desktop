@@ -1,0 +1,91 @@
+.viewport {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 9999;
+  display: grid;
+  gap: 10px;
+}
+
+.toast {
+  color: #ffffff;
+  border-radius: 10px;
+  min-width: 280px;
+  max-width: 380px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: toastEnter 180ms ease-out;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+}
+
+.message {
+  margin: 0;
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.countBadge {
+  min-width: 28px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.closeButton {
+  border: none;
+  cursor: pointer;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.closeButton:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.icon {
+  width: 20px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.info {
+  background: #1d4ed8;
+}
+
+.success {
+  background: #15803d;
+}
+
+.error {
+  background: #b91c1c;
+}
+
+@keyframes toastEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

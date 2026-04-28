@@ -1,0 +1,27 @@
+.container {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 24px 16px;
+  text-align: center;
+  color: #1f2937;
+  font-family: Arial, sans-serif;
+}
+
+.muted {
+  color: #6b7280;
+}
+
+.action {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: #1d4ed8;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.action:hover {
+  background: #1e40af;
+}

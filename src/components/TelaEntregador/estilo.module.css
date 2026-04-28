@@ -21,11 +21,25 @@ body {
 
 .conteiner {
     display: flex;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 94% -20%, rgba(8, 125, 191, 0.16), transparent 36%),
+      radial-gradient(circle at 4% 0%, rgba(243, 131, 66, 0.14), transparent 30%),
+      #eef4fb;
+}
+
+:global(body.vel-dark-mode) .conteiner {
+    background:
+      radial-gradient(circle at 94% -20%, rgba(56, 189, 248, 0.2), transparent 36%),
+      radial-gradient(circle at 4% 0%, rgba(34, 197, 94, 0.16), transparent 32%),
+      #0f1822;
 }
 
 .conteudoPrincipal {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: -webkit-fill-available !important;
+    width: 100%;
+    min-width: 0;
+    padding-bottom: 26px;
 }

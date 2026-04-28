@@ -1,0 +1,381 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  background:
+    radial-gradient(circle at top left, rgba(26, 132, 194, 0.15) 0%, rgba(26, 132, 194, 0) 35%),
+    linear-gradient(180deg, #eef4fa 0%, #f4f8fc 100%);
+  color: #13364d;
+}
+
+.content {
+  flex: 1;
+  min-height: 100vh;
+  overflow-y: auto;
+  padding: 24px 24px 28px;
+}
+
+.hero {
+  width: min(1160px, calc(100vw - 340px));
+  border-radius: 20px;
+  border: 1px solid #d5e2ec;
+  background: linear-gradient(120deg, #ffffff 0%, #f4f8fc 100%);
+  box-shadow: 0 14px 28px -24px rgba(15, 36, 52, 0.8);
+  margin: 0 auto 16px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(1.18rem, 1rem + 0.8vw, 1.6rem);
+  color: #0f3a55;
+}
+
+.hero p {
+  margin: 7px 0 4px;
+  color: #4a677a;
+  max-width: 70ch;
+}
+
+.hero small {
+  color: #607a8c;
+}
+
+.heroActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.grid {
+  width: min(1160px, calc(100vw - 340px));
+  margin: 0 auto 14px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.card {
+  border-radius: 18px;
+  border: 1px solid #d7e3ee;
+  background: #ffffff;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 12px 26px -25px rgba(14, 35, 51, 0.8);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.cardHeader h2 {
+  margin: 0;
+  font-size: 1.03rem;
+  color: #13415e;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.cardHeader small {
+  color: #6a8395;
+  font-size: 0.8rem;
+}
+
+.preferenceList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.preferenceRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid #dce6ef;
+  background: #f8fbfe;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.preferenceRow strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #1d4e69;
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+
+.preferenceRow span {
+  display: block;
+  color: #617b8d;
+  font-size: 0.8rem;
+}
+
+.preferenceRow input[type="checkbox"] {
+  width: 46px;
+  height: 24px;
+  accent-color: #0d6ca1;
+  cursor: pointer;
+}
+
+.selectRow {
+  border: 1px solid #dce6ef;
+  background: #f8fbfe;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.selectRow strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #1d4e69;
+}
+
+.selectRow select {
+  height: 38px;
+  border: 1px solid #cedce8;
+  border-radius: 10px;
+  padding: 0 11px;
+  font-size: 0.9rem;
+  color: #1f475f;
+  background: #ffffff;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.formGrid label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.84rem;
+  color: #486679;
+}
+
+.formGrid input {
+  height: 38px;
+  border: 1px solid #cad8e4;
+  border-radius: 10px;
+  padding: 0 11px;
+  font-size: 0.9rem;
+  color: #1f475f;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.formGrid input:focus,
+.selectRow select:focus {
+  border-color: #1e83be;
+  box-shadow: 0 0 0 3px rgba(30, 131, 190, 0.18);
+}
+
+.cardActions {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.primaryButton,
+.ghostButton,
+.textButton,
+.logoutButton {
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.primaryButton,
+.ghostButton,
+.logoutButton {
+  height: 38px;
+  padding: 0 13px;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, #0a6da8 0%, #0b557f 100%);
+  color: #ffffff;
+  box-shadow: 0 10px 20px -14px rgba(8, 81, 123, 1);
+}
+
+.ghostButton {
+  background: #f8fbfe;
+  border-color: #cbd9e5;
+  color: #184866;
+}
+
+.textButton {
+  background: transparent;
+  border: none;
+  color: #0f6da8;
+  font-size: 0.82rem;
+  padding: 0;
+}
+
+.logoutButton {
+  width: 100%;
+  background: #fff5f5;
+  border-color: #f3cdcd;
+  color: #9e3a3a;
+  margin-top: 2px;
+}
+
+.primaryButton:hover:not(:disabled),
+.ghostButton:hover:not(:disabled),
+.logoutButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.primaryButton:disabled,
+.ghostButton:disabled {
+  opacity: 0.58;
+  cursor: not-allowed;
+}
+
+.quickActions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.quickActions button {
+  min-height: 40px;
+  border-radius: 10px;
+  border: 1px solid #d5e2ec;
+  background: #fafcff;
+  color: #1f4b64;
+  cursor: pointer;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  text-align: left;
+}
+
+.quickActions button:hover {
+  border-color: #1e82bc;
+  background: #f0f8ff;
+}
+
+.metaText {
+  margin: 0;
+  color: #638091;
+  font-size: 0.8rem;
+}
+
+.dark {
+  background:
+    radial-gradient(circle at top left, rgba(35, 134, 197, 0.22) 0%, rgba(35, 134, 197, 0) 35%),
+    linear-gradient(180deg, #0f1822 0%, #121f2b 100%);
+  color: #d9e8f2;
+}
+
+.dark .hero,
+.dark .card {
+  background: #152535;
+  border-color: #284258;
+  box-shadow: 0 18px 30px -25px rgba(0, 0, 0, 0.9);
+}
+
+.dark .hero h1,
+.dark .cardHeader h2,
+.dark .preferenceRow strong,
+.dark .selectRow strong {
+  color: #d8ebf8;
+}
+
+.dark .hero p,
+.dark .hero small,
+.dark .cardHeader small,
+.dark .preferenceRow span,
+.dark .formGrid label,
+.dark .metaText {
+  color: #9ab4c7;
+}
+
+.dark .preferenceRow,
+.dark .selectRow,
+.dark .quickActions button,
+.dark .ghostButton {
+  border-color: #345169;
+  background: #1a2d3f;
+  color: #d3e7f5;
+}
+
+.dark .selectRow select,
+.dark .formGrid input {
+  background: #12202c;
+  border-color: #345169;
+  color: #e5f2fb;
+}
+
+.dark .logoutButton {
+  background: #3a2020;
+  border-color: #674040;
+  color: #f3d7d7;
+}
+
+@media (max-width: 1260px) {
+  .hero,
+  .grid {
+    width: min(1080px, calc(100vw - 270px));
+  }
+}
+
+@media (max-width: 920px) {
+  .content {
+    padding: 80px 12px 20px;
+  }
+
+  .hero,
+  .grid {
+    width: calc(100vw - 24px);
+  }
+
+  .hero {
+    flex-direction: column;
+  }
+
+  .heroActions {
+    width: 100%;
+  }
+
+  .heroActions button {
+    flex: 1 1 170px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}

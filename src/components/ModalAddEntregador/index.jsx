@@ -1,87 +1,246 @@
-import React from 'react';
-import style from './estilo.module.css';
+import React from "react";
+import style from "./estilo.module.css";
 import Http from "../RequisicaoHTTP/Http";
+import { apiFetch } from "../../services/httpClient";
+import { notifyApiError } from "../../services/uiFeedback";
+import { showToastSuccess } from "../../services/toast";
+import { useAuth } from "../../contexts/AuthContext";
+
+function applyCpfMask(value) {
+  const digits = String(value || "").replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+  if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+}
+
+function applyPhoneMask(value) {
+  const digits = String(value || "").replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
+function normalizeCpf(value) {
+  return String(value || "").replace(/\D/g, "").slice(0, 11);
+}
+
 export default function ModalAddEntregador({ isOpen, onClose }) {
-        // Se o modal não está aberto, retorna null 
-    if (!isOpen) return null;
+  const { userId } = useAuth();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [formData, setFormData] = React.useState({
+    nome: "",
+    cpf: "",
+    telefone: "",
+    email: "",
+    contaBancaria: "",
+    turno: "1",
+  });
 
-    const enviarDados = event => {
-        event.preventDefault();
+  const resetForm = React.useCallback(() => {
+    setFormData({
+      nome: "",
+      cpf: "",
+      telefone: "",
+      email: "",
+      contaBancaria: "",
+      turno: "1",
+    });
+  }, []);
 
-        const newUser = {
-            idCnpj: JSON.parse(localStorage.getItem("User")),
-            nome: document.querySelector("#nome").value,
-            idCpf: document.querySelector("#cpf").value,
-            telefone: document.querySelector("#telefone").value,
-            email: document.querySelector("#email").value,
-            contaBancaria: document.querySelector("#contaBancaria").value,
-            turno: document.querySelector("#turno").value,
-        }
+  const closeModal = React.useCallback(() => {
+    if (isSubmitting) {
+      return;
+    }
+    resetForm();
+    onClose();
+  }, [isSubmitting, onClose, resetForm]);
 
-        console.log(newUser)
-        enviaEntregadores(Http("POST", newUser));
+  if (!isOpen) {
+    return null;
+  }
+
+  const handleChange = (event) => {
+    const { id, value } = event.target;
+
+    if (id === "cpf") {
+      setFormData((current) => ({ ...current, cpf: applyCpfMask(value) }));
+      return;
     }
 
-    const enviaEntregadores = async (dados) => {
-        try {
-            const requisicao = await fetch("https://vel-tnpo.onrender.com/entregador/adicionar", dados);
-            console.log(requisicao);
-            if(requisicao.status > 199 && requisicao.status < 399){
-                console.log(requisicao)
-                alert("Usuário cadastrado com sucesso!")
-            } else{
-                alert("Entregador cadastrado com sucesso!")
-                throw new Error(requisicao.status);
-            }
-        } catch (error) {
-            console.log(error);
-            alert("Erro ao cadastrar usuário.");
-        }
+    if (id === "telefone") {
+      setFormData((current) => ({ ...current, telefone: applyPhoneMask(value) }));
+      return;
+    }
+
+    setFormData((current) => ({ ...current, [id]: value }));
+  };
+
+  const enviarDados = (event) => {
+    event.preventDefault();
+
+    const cpfSemMascara = normalizeCpf(formData.cpf);
+    if (cpfSemMascara.length !== 11) {
+      return;
+    }
+
+    const newUser = {
+      idCnpj: userId,
+      nome: formData.nome.trim(),
+      idCpf: cpfSemMascara,
+      senha: cpfSemMascara,
+      telefone: formData.telefone.trim(),
+      email: formData.email.trim(),
+      contaBancaria: formData.contaBancaria.trim(),
+      turno: Number(formData.turno),
+      status: true,
     };
 
-    return (
-        <div className={style.modalBackdrop}>
-            {/* Dialog é usado para criar um modal */}
-            <dialog className={style.modalConteiner} open>
+    enviaEntregadores(Http("POST", newUser));
+  };
 
-                <button className={style.modalBotaoFechar} onClick={onClose}>✖</button>
+  const enviaEntregadores = async (dados) => {
+    try {
+      setIsSubmitting(true);
+      const requisicao = await apiFetch("/entregador/adicionar", dados);
+      if (requisicao.ok) {
+        showToastSuccess("Entregador cadastrado com sucesso.");
+        resetForm();
+        onClose();
+        return;
+      }
+      let payload = null;
+      try {
+        payload = await requisicao.json();
+      } catch {
+        payload = null;
+      }
 
-                <h2 className={style.modalPerfilTitulo}>CADASTRAR ENTREGADOR</h2>
+      const error = new Error(payload?.message || `Status ${requisicao.status}`);
+      error.status = requisicao.status;
+      error.payload = payload;
+      throw error;
+    } catch (error) {
+      notifyApiError(error, "Erro ao cadastrar entregador.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-                <form className={style.modalForm} onSubmit={enviarDados}>
-                    <div className={style.modalImagemContainer}>
-                        <label htmlFor='fotoPerfil'>📸</label>
-                        <input type="file" id='fotoPerfil' />
-                    </div>
+  const iniciais = formData.nome
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((parte) => parte[0]?.toUpperCase() || "")
+    .join("") || "NV";
 
-                    <div className={style.modalFormConteiner}>
+  return (
+    <div className={style.modalBackdrop} role="presentation" onClick={closeModal}>
+      <dialog className={style.modalContainer} open onClick={(event) => event.stopPropagation()}>
+        <button
+          type="button"
+          className={style.modalCloseButton}
+          onClick={closeModal}
+          disabled={isSubmitting}
+          aria-label="Fechar cadastro"
+        >
+          ×
+        </button>
 
-                        <div className={style.modalFormGrupo}>
-                            <label htmlFor='nome'>Nome:</label>
-                            <input required type="text" id='nome' />
-                            <label htmlFor='cpf'>CPF:</label>
-                            <input required type="text" minLength={11} maxLength={14} id='cpf' />
-                            <label htmlFor='telefone'>Telefone:</label>
-                            <input required type="tel" id='telefone' />
-                        </div>
-                        <div className={style.modalFormGrupo}>
-                            <label htmlFor='email'>E-mail:</label>
-                            <input required type="email" id='email' />
-                            <label htmlFor='contaBancaria'>Conta Bancária:</label>
-                            <input required type="text" id='contaBancaria' />
-                            <label htmlFor='turno'>Turno:</label>
-                            <select name="turno" id="turno">
-                                <option value="1">Manhã</option>
-                                <option value="2">Tarde</option>
-                                <option value="3">Noite</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div className={style.modalBotoes}>
-                        <button type="submit" className={style.modalBotaoEnviar}>CADASTRAR</button>
-                    </div>
-                </form>
-            </dialog>
-        </div>
-    );
-};
+        <header className={style.modalHeader}>
+          <div className={style.avatar}>{iniciais}</div>
+          <div>
+            <h2>Novo entregador</h2>
+            <p>Preencha os dados para cadastrar e disponibilizar no painel de operação.</p>
+          </div>
+        </header>
+
+        <form className={style.modalForm} onSubmit={enviarDados}>
+          <div className={style.formGrid}>
+            <label htmlFor="nome">
+              Nome completo
+              <input
+                required
+                type="text"
+                id="nome"
+                value={formData.nome}
+                onChange={handleChange}
+                placeholder="Ex.: João da Silva"
+              />
+            </label>
+
+            <label htmlFor="cpf">
+              CPF
+              <input
+                required
+                type="text"
+                id="cpf"
+                value={formData.cpf}
+                onChange={handleChange}
+                placeholder="000.000.000-00"
+                maxLength={14}
+              />
+            </label>
+
+            <label htmlFor="telefone">
+              Telefone
+              <input
+                required
+                type="tel"
+                id="telefone"
+                value={formData.telefone}
+                onChange={handleChange}
+                placeholder="(11) 99999-9999"
+                maxLength={16}
+              />
+            </label>
+
+            <label htmlFor="email">
+              E-mail
+              <input
+                required
+                type="email"
+                id="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="entregador@email.com"
+              />
+            </label>
+
+            <label htmlFor="contaBancaria">
+              Conta bancária
+              <input
+                required
+                type="text"
+                id="contaBancaria"
+                value={formData.contaBancaria}
+                onChange={handleChange}
+                placeholder="Banco / agência / conta"
+              />
+            </label>
+
+            <label htmlFor="turno">
+              Turno
+              <select name="turno" id="turno" value={formData.turno} onChange={handleChange}>
+                <option value="1">Manhã</option>
+                <option value="2">Tarde</option>
+                <option value="3">Noite</option>
+              </select>
+            </label>
+          </div>
+
+          <footer className={style.modalActions}>
+            <button type="button" className={style.secondaryButton} onClick={closeModal} disabled={isSubmitting}>
+              Cancelar
+            </button>
+            <button type="submit" className={style.primaryButton} disabled={isSubmitting}>
+              {isSubmitting ? "Salvando..." : "Cadastrar entregador"}
+            </button>
+          </footer>
+        </form>
+      </dialog>
+    </div>
+  );
+}

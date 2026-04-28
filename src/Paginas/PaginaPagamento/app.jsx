@@ -1,16 +1,16 @@
+import { useLocation } from "react-router-dom";
 import TelaPagamento from "../../components/TelaPagamento/TelaPagamento.jsx";
-import { useNavigate } from "react-router-dom";
-import GlobalStyle from '../../components/globalStyles';
+import GlobalStyle from "../../components/globalStyles";
 import { Container } from "./pagamentotyle";
 
-function AppPaginaPagamento() {
-  const navigate = useNavigate();
+export default function AppPaginaPagamento() {
+  const { pathname } = useLocation();
+  const lang = pathname.toLowerCase().includes("pagamentoingles") ? "en" : "pt";
+
   return (
     <Container>
       <GlobalStyle />
-      <TelaPagamento valorPlano={localStorage.getItem("Plano")} />
-    </ Container>
-  )
+      <TelaPagamento valorPlano={localStorage.getItem("Plano")} lang={lang} />
+    </Container>
+  );
 }
-
-export default AppPaginaPagamento;

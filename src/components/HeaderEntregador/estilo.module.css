@@ -1,27 +1,72 @@
 .header {
-    background-color: #005A8D;
-    height: fit-content;
-    width: 80%;
-    padding: 16px;
-    margin: 50px;
-    border-radius: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 4px 4px 7px 0px rgba(0, 0, 0, 0.25);
+  width: min(1100px, calc(100% - 48px));
+  margin: 24px 24px 14px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background:
+    radial-gradient(circle at 90% -30%, rgba(56, 189, 248, 0.24), transparent 45%),
+    linear-gradient(132deg, #ffffff 0%, #f6fbff 100%);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-.header_title {
-    color: #FFF;
-    text-align: center;
-    font-family: Biryani;
-    font-size: 30px;
-    font-weight: 800;
+:global(body.vel-dark-mode) .header {
+  border-color: #345169;
+  background:
+    radial-gradient(circle at 90% -30%, rgba(56, 189, 248, 0.2), transparent 45%),
+    linear-gradient(132deg, #152535 0%, #1a2d3f 100%);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
 }
 
-.header_empresa {
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 100%;
+.headerTitle {
+  margin: 0;
+  color: #0f172a;
+  font-family: Biryani, sans-serif;
+  font-size: clamp(1.4rem, 2.2vw, 1.9rem);
+  line-height: 1.2;
+}
+
+:global(body.vel-dark-mode) .headerTitle {
+  color: #e2ecf7;
+}
+
+.headerSubtitle {
+  margin: 8px 0 0;
+  max-width: 62ch;
+  color: #475569;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+:global(body.vel-dark-mode) .headerSubtitle {
+  color: #a8c0d3;
+}
+
+.headerDate {
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 7px 12px;
+}
+
+:global(body.vel-dark-mode) .headerDate {
+  border-color: #345169;
+  background: #1a2d3f;
+  color: #b8cede;
+}
+
+@media (max-width: 768px) {
+  .header {
+    width: calc(100% - 20px);
+    margin: 14px 10px 10px;
+    padding: 14px;
+  }
 }

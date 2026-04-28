@@ -1,168 +1,288 @@
-import React, { useState, useEffect } from 'react';
-import style from './estilo.module.css';
-import iconeAlterar from '../../assets/images/icons/iconeAlterar.svg';
+import React, { useEffect, useState } from "react";
+import style from "./estilo.module.css";
 import Http from "../RequisicaoHTTP/Http.jsx";
+import { apiFetch } from "../../services/httpClient";
+import { notifyApiError } from "../../services/uiFeedback";
+import { showToastSuccess } from "../../services/toast";
+import { useAuth } from "../../contexts/AuthContext";
+
+function normalizeCpf(value) {
+  return String(value || "").replace(/\D/g, "").slice(0, 11);
+}
+
+function applyPhoneMask(value) {
+  const digits = String(value || "").replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
+function getTurnoLabel(value) {
+  const normalized = String(value ?? "").trim().toLowerCase();
+  if (normalized === "1" || normalized === "manha" || normalized === "manhã") return "Manhã";
+  if (normalized === "2" || normalized === "tarde") return "Tarde";
+  if (normalized === "3" || normalized === "noite") return "Noite";
+  return "Não informado";
+}
+
+function isOnlineStatus(value) {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return value === 1;
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    return normalized === "online" || normalized === "true" || normalized === "ativo";
+  }
+  return false;
+}
+
+function getInitials(name) {
+  return String(name || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || "")
+    .join("") || "NV";
+}
 
 export default function ModalPerfilEntregador({ isOpen, onClose, entregador }) {
-    // ver ou editar - mudança de estado
-    const [estado, setEstado] = useState('view');
-    const [nomeEntregador, setNomeEntregador] = useState('');
-    const [cpf, setCpf] = useState('');
-    const [telefone, setTelefone] = useState('');
-    const [email, setEmail] = useState('');
-    const [contaBancaria, setContaBancaria] = useState('');
-    const [turno, setTurno] = useState('');
+  const { userId } = useAuth();
+  const [mode, setMode] = useState("view");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [originalCpf, setOriginalCpf] = useState("");
+  const [formData, setFormData] = useState({
+    nome: "",
+    cpf: "",
+    telefone: "",
+    email: "",
+    contaBancaria: "",
+    turno: "1",
+  });
 
-    useEffect(() => {
-        if (entregador) {
-            setNomeEntregador(entregador.nome);
-            setCpf(entregador.idCpf);
-            setTelefone(entregador.telefone);
-            setEmail(entregador.email);
-            setContaBancaria(entregador.contaBancaria);
-            setTurno(entregador.turno);
-        }
-    }, [entregador]);
-
-    function alterarEstadoParaEditar() {
-        setEstado('edit');
+  useEffect(() => {
+    if (!entregador) {
+      return;
     }
 
-    function alterarEstadoParaVer() {
-        setEstado('view');
+    const cpf = String(entregador.idCpf || "");
+    setOriginalCpf(cpf);
+    setFormData({
+      nome: entregador.nome || "",
+      cpf,
+      telefone: entregador.telefone || "",
+      email: entregador.email || "",
+      contaBancaria: entregador.contaBancaria || "",
+      turno: String(entregador.turno ?? "1"),
+    });
+    setMode("view");
+  }, [entregador]);
+
+  if (!isOpen || !entregador) {
+    return null;
+  }
+
+  const online = isOnlineStatus(entregador.status);
+  const initials = getInitials(formData.nome);
+  const turnoLabel = getTurnoLabel(formData.turno);
+
+  const closeModal = () => {
+    if (isSubmitting) {
+      return;
+    }
+    setMode("view");
+    onClose();
+  };
+
+  const handleChange = (event) => {
+    const { id, value } = event.target;
+    if (id === "telefone") {
+      setFormData((current) => ({ ...current, telefone: applyPhoneMask(value) }));
+      return;
+    }
+    setFormData((current) => ({ ...current, [id]: value }));
+  };
+
+  const salvarAlteracoes = async (event) => {
+    event.preventDefault();
+
+    const cpfSemMascara = normalizeCpf(originalCpf || formData.cpf);
+    if (!cpfSemMascara) {
+      return;
     }
 
-    if (!isOpen || !entregador) return null;
-
-    const enviarDados = event => {
-        event.preventDefault();
-        console.log("user")
-        const newUser = {
-            idCnpj: JSON.parse(localStorage.getItem("User")),
-            nome: document.querySelector("#nome").value,
-            idCpf: document.querySelector("#cpf").value,
-            telefone: document.querySelector("#telefone").value,
-            email: document.querySelector("#email").value,
-            contaBancaria: document.querySelector("#contaBancaria").value,
-            turno: document.querySelector("#turno").value,
-        }
-
-        enviaEntregadores(Http("PUT", newUser));
-    }
-
-    const enviaEntregadores = async (dados) => {
-        try {
-            const requisicao = await fetch(`https://vel-tnpo.onrender.com/entregador/editar/${document.querySelector("#cpf").value}`, dados);
-            console.log(requisicao);
-            if(requisicao.status > 199 && requisicao.status < 399){
-                console.log(requisicao)
-                alert("Usuário atualizado com sucesso!")
-                alterarEstadoParaVer();
-            } else{
-                throw new Error(requisicao.status);
-            }
-        } catch (error) {
-            console.log(error);
-            alert("Erro ao atualizar usuário.");
-        }
+    const payload = {
+      idCnpj: userId,
+      nome: formData.nome.trim(),
+      idCpf: cpfSemMascara,
+      telefone: formData.telefone.trim(),
+      email: formData.email.trim(),
+      contaBancaria: formData.contaBancaria.trim(),
+      turno: formData.turno,
     };
 
-    return (
-        <div className={style.modalPerfilBackdrop}>
-            <dialog className={style.modalPerfilConteiner} open>
-                <button className={style.modalPerfilBotaoFechar} onClick={onClose}>✖</button>
+    try {
+      setIsSubmitting(true);
+      const requisicao = await apiFetch(`/entregador/editar/${cpfSemMascara}`, Http("PUT", payload));
+      if (requisicao.ok) {
+        showToastSuccess("Perfil atualizado com sucesso.");
+        setMode("view");
+        return;
+      }
+      let responsePayload = null;
+      try {
+        responsePayload = await requisicao.json();
+      } catch {
+        responsePayload = null;
+      }
 
-                <div className={`${style.modalPerfilStatusCor} ${entregador.status === 'Online' ? style.online : style.offline}`}>
-                    <p>{entregador.id}</p>
-                </div>
+      const error = new Error(responsePayload?.message || `Status ${requisicao.status}`);
+      error.status = requisicao.status;
+      error.payload = responsePayload;
+      throw error;
+    } catch (error) {
+      notifyApiError(error, "Erro ao atualizar entregador.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-                <h2 className={style.modalPerfilTitulo}>
-                    {estado === 'edit' && ('EDITAR ')}ENTREGADOR
-                </h2>
+  return (
+    <div className={style.modalBackdrop} role="presentation" onClick={closeModal}>
+      <dialog className={style.modalContainer} open onClick={(event) => event.stopPropagation()}>
+        <button
+          type="button"
+          className={style.modalCloseButton}
+          onClick={closeModal}
+          disabled={isSubmitting}
+          aria-label="Fechar perfil"
+        >
+          ×
+        </button>
 
-                {estado === 'view' ? (
-                    <>
-                        <div className={style.modalImagemContainer}>
-                            <p>🛵</p>
-                        </div>
+        <header className={style.modalHeader}>
+          <div className={style.avatar}>{initials}</div>
+          <div className={style.headerInfo}>
+            <h2>{mode === "edit" ? "Editar entregador" : "Perfil do entregador"}</h2>
+            <p>ID: {formData.cpf || "--"}</p>
+          </div>
+          <span className={`${style.statusBadge} ${online ? style.online : style.offline}`}>
+            {online ? "Online" : "Offline"}
+          </span>
+        </header>
 
-                        <div className={style.modalPerfilInfoEntregador}>
-                            <div className={style.modalPerfilGrupo}>
-                                <div className={style.modalPerfilCampo}>
-                                    <p className={style.modalPerfilCampoDest}>Nome:</p>
-                                    <p>{nomeEntregador}</p>
-                                </div>
-                                <div className={style.modalPerfilCampo}>
-                                    <p className={style.modalPerfilCampoDest}>CPF:</p>
-                                    <p>{cpf}</p>
-                                </div>
-                                <div className={style.modalPerfilCampo}>
-                                    <p className={style.modalPerfilCampoDest}>Telefone:</p>
-                                    <p>{telefone}</p>
-                                </div>
-                            </div>
+        {mode === "view" ? (
+          <>
+            <section className={style.infoGrid}>
+              <article>
+                <span>Nome</span>
+                <strong>{formData.nome || "--"}</strong>
+              </article>
+              <article>
+                <span>CPF</span>
+                <strong>{formData.cpf || "--"}</strong>
+              </article>
+              <article>
+                <span>Telefone</span>
+                <strong>{formData.telefone || "--"}</strong>
+              </article>
+              <article>
+                <span>E-mail</span>
+                <strong>{formData.email || "--"}</strong>
+              </article>
+              <article>
+                <span>Conta bancária</span>
+                <strong>{formData.contaBancaria || "--"}</strong>
+              </article>
+              <article>
+                <span>Turno</span>
+                <strong>{turnoLabel}</strong>
+              </article>
+            </section>
 
-                            <div className={style.modalPerfilGrupo}>
-                                <div className={style.modalPerfilCampo}>
-                                    <p className={style.modalPerfilCampoDest}>Email:</p>
-                                    <p>{email}</p>
-                                </div>
+            <footer className={style.modalActions}>
+              <button type="button" className={style.secondaryButton} onClick={closeModal}>
+                Fechar
+              </button>
+              <button type="button" className={style.primaryButton} onClick={() => setMode("edit")} disabled={isSubmitting}>
+                Editar dados
+              </button>
+            </footer>
+          </>
+        ) : (
+          <form className={style.modalForm} onSubmit={salvarAlteracoes}>
+            <div className={style.formGrid}>
+              <label htmlFor="nome">
+                Nome completo
+                <input
+                  id="nome"
+                  type="text"
+                  value={formData.nome}
+                  onChange={handleChange}
+                  placeholder="Nome do entregador"
+                  required
+                />
+              </label>
 
-                                <div className={style.modalPerfilCampo}>
-                                    <p className={style.modalPerfilCampoDest}>Conta Bancaria:</p>
-                                    <p>{contaBancaria}</p>
-                                </div>
+              <label htmlFor="cpf">
+                CPF
+                <input id="cpf" type="text" value={formData.cpf} readOnly className={style.readOnlyInput} />
+              </label>
 
-                                <div className={style.modalPerfilCampo}>
-                                    <p className={style.modalPerfilCampoDest}>Turno:</p>
-                                    <p>{turno}</p>
-                                </div>
-                            </div>
-                        </div>
+              <label htmlFor="telefone">
+                Telefone
+                <input
+                  id="telefone"
+                  type="tel"
+                  value={formData.telefone}
+                  onChange={handleChange}
+                  placeholder="(11) 99999-9999"
+                />
+              </label>
 
-                        <div className={style.modalPerfilBotoes}>
-                            <button type="submit" className={style.modaPerfilBotaoEnviar}>Valor a pagar: R$580,00</button>
-                            <button className={style.modalPerfilBotaoAlterar} onClick={alterarEstadoParaEditar}>
-                                <img src={iconeAlterar} alt="Alterar" />
-                            </button>
-                        </div>
-                    </>
-                ) : (
-                    <form className={style.modalForm} onSubmit={enviarDados}>
-                        <div className={style.modalImagemContainer}>
-                            <label htmlFor='fotoPerfil'>✏️</label>
-                            <input type="file" id='fotoPerfil' />
-                        </div>
+              <label htmlFor="email">
+                E-mail
+                <input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="entregador@email.com"
+                />
+              </label>
 
-                        <div className={style.modalFormConteiner}>
-                            <div className={style.modalFormGrupo}>
-                                <label htmlFor='nome'>Nome:</label>
-                                <input type="text" value={nomeEntregador} onChange={(e) => setNomeEntregador(e.target.value)} id='nome' />
-                                <label htmlFor='cpf'>CPF:</label>
-                                <input type="text" value={cpf} onChange={(e) => setCpf(e.target.value)} id='cpf' />
-                                <label htmlFor='telefone'>Telefone:</label>
-                                <input type="tel" value={telefone} onChange={(e) => setTelefone(e.target.value)} id='telefone' />
-                            </div>
-                            <div className={style.modalFormGrupo}>
-                                <label htmlFor='email'>E-mail:</label>
-                                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} id='email' />
-                                <label htmlFor='contaBancaria'>Conta Bancária:</label>
-                                <input type="text" value={contaBancaria} onChange={(e) => setContaBancaria(e.target.value)} id='contaBancaria' />
-                                <label htmlFor='turno'>Turno:</label>
-                                <select name="turno" value={turno} onChange={(e) => setTurno(e.target.value)} id="turno">
-                                    <option value="1">Manhã</option>
-                                    <option value="2">Tarde</option>
-                                    <option value="3">Noite</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className={style.modalBotoes}>
-                            <button type="button" className={`${style.modalBotaoEnviar} ${style.cancelar}`} onClick={alterarEstadoParaVer}>Cancelar</button>
-                            <input type="submit" value="Enviar" className={style.modalBotaoEnviar} />
-                        </div>
-                    </form>
-                )}
-            </dialog>
-        </div>
-    );
+              <label htmlFor="contaBancaria">
+                Conta bancária
+                <input
+                  id="contaBancaria"
+                  type="text"
+                  value={formData.contaBancaria}
+                  onChange={handleChange}
+                  placeholder="Banco / agência / conta"
+                />
+              </label>
+
+              <label htmlFor="turno">
+                Turno
+                <select id="turno" value={formData.turno} onChange={handleChange}>
+                  <option value="1">Manhã</option>
+                  <option value="2">Tarde</option>
+                  <option value="3">Noite</option>
+                </select>
+              </label>
+            </div>
+
+            <footer className={style.modalActions}>
+              <button type="button" className={style.secondaryButton} onClick={() => setMode("view")} disabled={isSubmitting}>
+                Cancelar
+              </button>
+              <button type="submit" className={style.primaryButton} disabled={isSubmitting}>
+                {isSubmitting ? "Salvando..." : "Salvar alterações"}
+              </button>
+            </footer>
+          </form>
+        )}
+      </dialog>
+    </div>
+  );
 }

@@ -7,7 +7,6 @@ export default function ModalConfirmar({ isOpen, onClose, pedido, entregador }) 
 
     if (!isOpen) return null;
 
-    console.log(pedido.value, entregador.value)
     return (
         <div className={style.modalBackdrop}>
 
@@ -18,11 +17,11 @@ export default function ModalConfirmar({ isOpen, onClose, pedido, entregador }) 
                 <div className={style.IDs}>
                     <div className={style.IDPedido}>
                         <img src={caixa} />
-                        <p>ID pedido: #{pedido.value}</p>
+                        <p>ID pedido: #{pedido}</p>
                     </div>
                     <div className={style.IDEntregador}>
                         <img src={capacete} />
-                        <p>ID entregador: #{entregador.value}</p>
+                        <p>ID entregador: #{entregador}</p>
                     </div>
                 </div>
                 <div className={style.modalBotoes}>

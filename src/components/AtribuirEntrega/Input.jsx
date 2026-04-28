@@ -3,14 +3,13 @@ import ModalConfirmar from "../ModalConfirmarEntrega/index";
 
 export default function Input() {
   const [isModalConfirmarOpen, setIsModalConfirmarOpen] = useState(false);
-
-  let IDEntregador = document.querySelector("#IDEntregador");
-  let IDPedido = document.querySelector("#IDPedido");
+  const [pedidoId, setPedidoId] = useState("");
+  const [entregadorId, setEntregadorId] = useState("");
 
   function AbrirCaixa() {
-    IDEntregador = document.querySelector("#IDEntregador").value;
-    IDPedido = document.querySelector("#IDPedido").value;
-    console.log(IDEntregador, IDPedido);
+    if (!pedidoId || !entregadorId) {
+      return;
+    }
     setIsModalConfirmarOpen(true);
   }
 
@@ -24,6 +23,8 @@ export default function Input() {
             id="IDPedido"
             type="text"
             placeholder="Insira o ID do Pedido"
+            value={pedidoId}
+            onChange={(event) => setPedidoId(event.target.value)}
           />
 
           <label className="Titulo-Form">ID do Entregador</label>
@@ -32,6 +33,8 @@ export default function Input() {
             id="IDEntregador"
             type="text"
             placeholder="Insira o ID do Entregador"
+            value={entregadorId}
+            onChange={(event) => setEntregadorId(event.target.value)}
           />
 
           <div className="Botao">
@@ -43,8 +46,8 @@ export default function Input() {
           <ModalConfirmar
             isOpen={isModalConfirmarOpen}
             onClose={() => setIsModalConfirmarOpen(false)}
-            pedido={IDPedido}
-            entregador={IDEntregador}
+            pedido={pedidoId}
+            entregador={entregadorId}
           />
         </form>
       </div>

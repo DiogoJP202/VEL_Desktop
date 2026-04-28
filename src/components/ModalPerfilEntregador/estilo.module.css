@@ -1,374 +1,383 @@
-.modalPerfilBackdrop {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+  padding: clamp(12px, 3vw, 24px);
 }
 
-.modalPerfilConteiner {
-    position: relative;
-    background: #ffffff;
-    width: 50%;
-    margin-left: 23%;
-    padding: 30px;
-    border-radius: 8px;
-    border: none;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
+.modalContainer {
+  width: min(800px, 100%);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 20px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  box-shadow: 0 24px 56px rgba(15, 23, 42, 0.28);
+  padding: clamp(14px, 2.4vw, 22px);
+  display: grid;
+  gap: 16px;
+  position: relative;
+  animation: modalFadeIn 180ms ease-out;
 }
 
-.modalPerfilBotaoFechar {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 35px;
-    font-weight: 700;
-    margin: 0px 18px;
-    cursor: pointer;
-    color: var(--color2);
-
+:global(body.vel-dark-mode) .modalContainer {
+  border-color: #345169;
+  background: linear-gradient(180deg, #152535 0%, #1a2d3f 100%);
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.46);
 }
 
-.modalPerfilHeader {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-between;
+.modalContainer::backdrop {
+  display: none;
 }
 
-.modalPerfilStatusCor {
-    padding: 10px;
-    background-color: #1c77d2;
-    color: white;
-    font-family: Biryani;
-    font-weight: 700;
-    padding: 5px 10px 1px 10px;
-    margin-bottom: 20px;
-    border: none;
-    border-radius: 5px;
-    width: fit-content;
-    position: absolute;
+.modalCloseButton {
+  justify-self: end;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: #f8fafc;
+  color: #334155;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: all 160ms ease;
+}
+
+:global(body.vel-dark-mode) .modalCloseButton {
+  border-color: #345169;
+  background: #1a2d3f;
+  color: #dbeafe;
+}
+
+.modalCloseButton:hover {
+  background: #eef3f8;
+  border-color: rgba(100, 116, 139, 0.5);
+}
+
+:global(body.vel-dark-mode) .modalCloseButton:hover {
+  background: #22394e;
+  border-color: #3e607c;
+}
+
+.modalHeader {
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.avatar {
+  width: 68px;
+  height: 68px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #005a8d 0%, #0e84ca 100%);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.08rem;
+  font-weight: 800;
+}
+
+.headerInfo h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.12rem;
+  line-height: 1.3;
+}
+
+:global(body.vel-dark-mode) .headerInfo h2 {
+  color: #e2ecf7;
+}
+
+.headerInfo p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 0.84rem;
+}
+
+:global(body.vel-dark-mode) .headerInfo p {
+  color: #a8c0d3;
+}
+
+.statusBadge {
+  height: 30px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .online {
-    background-color: #6BDACC;
-    color: #000000;
+  background: rgba(34, 197, 94, 0.16);
+  color: #166534;
+}
+
+:global(body.vel-dark-mode) .online {
+  background: rgba(34, 197, 94, 0.22);
+  color: #6ee7b7;
 }
 
 .offline {
-    background-color: #2B2B36;
-    color: #ffffff;
+  background: rgba(239, 68, 68, 0.16);
+  color: #991b1b;
 }
 
-.modalPerfilStatusCor>p {
-    color: #FFF;
-    font-family: Biryani;
-    font-size: 20px;
-    font-weight: 800;
+:global(body.vel-dark-mode) .offline {
+  background: rgba(239, 68, 68, 0.22);
+  color: #fca5a5;
 }
 
-.modalPerfilTitulo {
-    color: #222;
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.infoGrid article {
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 10px;
+  background: #f8fafc;
+  padding: 10px;
+  display: grid;
+  gap: 3px;
+}
+
+:global(body.vel-dark-mode) .infoGrid article {
+  border-color: #345169;
+  background: #1a2d3f;
+}
+
+.infoGrid span {
+  color: #64748b;
+  font-size: 0.74rem;
+}
+
+:global(body.vel-dark-mode) .infoGrid span {
+  color: #a8c0d3;
+}
+
+.infoGrid strong {
+  color: #0f172a;
+  font-size: 0.9rem;
+}
+
+:global(body.vel-dark-mode) .infoGrid strong {
+  color: #e2ecf7;
+}
+
+.modalForm {
+  display: grid;
+  gap: 12px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.formGrid label {
+  display: grid;
+  gap: 6px;
+  color: #475569;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: rgba(248, 250, 252, 0.72);
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+:global(body.vel-dark-mode) .formGrid label {
+  color: #b8cede;
+  background: rgba(26, 45, 63, 0.88);
+}
+
+.formGrid label:focus-within {
+  border-color: rgba(14, 132, 202, 0.35);
+  background: #f8fcff;
+}
+
+:global(body.vel-dark-mode) .formGrid label:focus-within {
+  border-color: rgba(56, 189, 248, 0.5);
+  background: #20364a;
+}
+
+.formGrid input,
+.formGrid select {
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: #ffffff;
+  color: #0f172a;
+  padding: 0 12px;
+  font-size: 0.84rem;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+}
+
+:global(body.vel-dark-mode) .formGrid input,
+:global(body.vel-dark-mode) .formGrid select {
+  border-color: #345169;
+  background: #142534;
+  color: #e2ecf7;
+}
+
+.formGrid input::placeholder {
+  color: #94a3b8;
+}
+
+:global(body.vel-dark-mode) .formGrid input::placeholder {
+  color: #8ca4b7;
+}
+
+.formGrid input:hover,
+.formGrid select:hover {
+  border-color: rgba(100, 116, 139, 0.55);
+}
+
+:global(body.vel-dark-mode) .formGrid input:hover,
+:global(body.vel-dark-mode) .formGrid select:hover {
+  border-color: #3e607c;
+}
+
+.formGrid input:focus,
+.formGrid select:focus {
+  outline: none;
+  border-color: #0e84ca;
+  box-shadow: 0 0 0 3px rgba(14, 132, 202, 0.14);
+}
+
+:global(body.vel-dark-mode) .formGrid input:focus,
+:global(body.vel-dark-mode) .formGrid select:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+
+.readOnlyInput {
+  background: #f1f5f9 !important;
+  color: #64748b !important;
+  cursor: not-allowed;
+}
+
+:global(body.vel-dark-mode) .readOnlyInput {
+  background: #243648 !important;
+  color: #b8cede !important;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modalActions button {
+  height: 40px;
+  border-radius: 10px;
+  padding: 0 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 120ms ease, filter 120ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+
+.modalActions button:hover {
+  transform: translateY(-1px);
+}
+
+.modalActions button:active {
+  transform: translateY(0);
+}
+
+.secondaryButton {
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+}
+
+:global(body.vel-dark-mode) .secondaryButton {
+  background: #1a2d3f;
+  color: #dbeafe;
+  border-color: #345169;
+}
+
+.secondaryButton:hover {
+  border-color: rgba(100, 116, 139, 0.55);
+  background: #f8fafc;
+}
+
+:global(body.vel-dark-mode) .secondaryButton:hover {
+  border-color: #3e607c;
+  background: #22394e;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, #0369a1 0%, #0e84ca 100%);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 10px 18px rgba(3, 105, 161, 0.28);
+}
+
+.primaryButton:hover {
+  filter: brightness(1.05);
+}
+
+.modalActions button:disabled,
+.modalCloseButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.modalActions button:focus-visible,
+.modalCloseButton:focus-visible {
+  outline: 2px solid rgba(14, 132, 202, 0.55);
+  outline-offset: 2px;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 760px) {
+  .modalHeader {
+    grid-template-columns: 1fr;
+    justify-items: center;
     text-align: center;
-    font-family: Biryani;
-    font-size: 20px;
-    font-weight: 800;
-    margin-bottom: 30px;
-}
+  }
 
-.modalImagemContainer p {
-    background-color: #D9D9D9;
-    width: 150px;
-    height: 150px;
-    font-size: 50px;
-    line-height: 100%;
-    padding: 40px 20px;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+  .statusBadge {
+    justify-self: center;
+  }
 
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
 
-.modalPerfilInfoEntregador {
-    display: flex;
-    flex-flow: row wrap;
-    /* flex-direction: row; */
-    /* display: grid;
-    grid-template-columns: repeat(2,1fr); */
-    gap: 10px;
-    justify-content: space-between;
-    margin: 30px 0px;
-}
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
 
-.modalPerfilGrupo {
-    
-    display: flex;
+  .modalActions {
     flex-direction: column;
-    gap: 20px;
-    /* width: 100%; */
-    justify-content: center;
-}
+  }
 
-.modalPerfilCampo {
-    display: flex;
-    flex-direction: row;
+  .modalActions button {
     width: 100%;
-    gap: 8px;
-
-    >p {
-        font-family: Biryani;
-        font-size: 18px;
-        font-style: normal;
-        font-weight: 600;
-        line-height: normal;
-    }
-
-    >p:not(.modalPerfilCampoDest) {
-        color: #222;
-
-    }
-}
-
-.modalPerfilCampoDest {
-    color: #005A8D;
-    font-family: Biryani;
-    font-weight: 600;
-}
-
-.modalPerfilBotoes {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modaPerfilBotaoEnviar {
-    padding: 10px;
-    background-color: var(--color2);
-    color: white;
-    font-size: 16px;
-    font-family: Biryani;
-    font-weight: 700;
-    line-height: 100%;
-    padding: 15px 15px 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: fit-content;
-
-    &:hover {
-        background-color: #d46c30;
-    }
-}
-
-.modalPerfilBotaoAlterar {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    width: fit-content;
-    height: fit-content;
-
-}
-
-.modalPerfilBotaoAlterar img {
-    width: 30px;
-    height: auto;
-}
-
-/* alterar */
-
-
-.modalForm {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.modalImagemContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.modalImagemContainer label {
-    background-color: #D9D9D9;
-    ;
-    width: 150px;
-    height: 150px;
-    font-size: 50px;
-    line-height: 100%;
-    padding: 40px 20px;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    text-shadow: 2px 2px rgba(0, 0, 0, 0.2);
-}
-
-.modalImagemContainer input {
-    display: none;
-}
-
-.modalImagem {
-    width: 50px;
-    height: 50px;
-}
-
-.modalFormConteiner {
-    display: flex;
-    flex-direction: row;
-    gap: 30px;
-    justify-content: center;
-}
-
-.modalFormGrupo {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
-.modalFormGrupo label {
-    color: var(--color6);
-    font-family: Biryani;
-    font-size: 16px;
-    font-weight: 600;
-}
-
-.modalFormGrupo input {
-    background: #ECF3FB;
-    border: none;
-    border-radius: 10px;
-    padding: 5px 15px;
-    color: var(--color6);
-    font-family: Biryani;
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 18px;
-
-    &:focus{
-        outline: 1px solid #c9e2ff;
-    }
-}
-
-.modalBotoes{
-    width: 100%;
-    display: flex;
-    align-self: center;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-.modalBotaoEnviar {
-    padding: 10px;
-    background-color: #3699FF;
-    color: white;
-    font-family: Biryani;
-    font-weight: 700;
-    line-height: 100%;
-    padding: 15px 15px 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: fit-content;
-
-    &:hover{
-        background-color: #0f6ed4;
-    }
-}
-
-.modalBotaoEnviar {
-    padding: 10px;
-    background-color: #3699FF;
-    color: white;
-    font-family: Biryani;
-    font-weight: 700;
-    line-height: 100%;
-    padding: 15px 15px 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: fit-content;
-
-    &.cancelar {
-        background-color: #F64E60;
-    }
-}
-
-@media screen and (max-width: 1199px) {
-    .modalFormConteiner {
-        flex-wrap: wrap;
-    }
-}
-/* ------- */
-
-
-.modalForm {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.modalImagemContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.modalImagem {
-    width: 50px;
-    height: 50px;
-}
-
-.modalFormConteiner {
-    display: flex;
-    flex-direction: row;
-    gap: 30px;
-    justify-content: center;
-}
-
-.modalFormGrupo {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
-.modalFormGrupo label {
-    color: var(--color6);
-    font-family: Biryani;
-    font-size: 16px;
-    font-weight: 600;
-}
-
-.modalFormGrupo input {
-    background: #ECF3FB;
-    border: none;
-    border-radius: 10px;
-    padding: 5px 15px;
-    color: var(--color6);
-    font-family: Biryani;
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 18px;
-
-    &:focus {
-        outline: 1px solid #c9e2ff;
-    }
-}
-
-@media screen and (max-width: 1000px){
-    .modalFormGrupo input {
-        width: 45% !important;
-    }
+  }
 }

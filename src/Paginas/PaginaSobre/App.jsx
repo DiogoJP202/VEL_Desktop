@@ -1,162 +1,297 @@
-import React from 'react';
-import { FaGithub, FaLinkedin } from 'react-icons/fa';
-import iconVisao from '../../assets/images/icons/Visão.png';
-import iconValores from '../../assets/images/icons/Valores.png';
-import iconMissoes from "../../assets/images/icons/Missao.png"
-import iconOds04 from '../../assets/images/icons/ODS9.png';
-import iconOds08 from '../../assets/images/icons/ODS08.png';
-import iconOds11 from '../../assets/images/icons/ODS11.png';
-import telescopio from "../../assets/images/icons/telescopio.webp"
-import Diogo from "../../assets/images/Diogo.png"; 
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
+import iconVisao from "../../assets/images/icons/Visão.png";
+import iconValores from "../../assets/images/icons/Valores.png";
+import iconMissoes from "../../assets/images/icons/Missao.png";
+import iconOds09 from "../../assets/images/icons/ODS9.png";
+import iconOds08 from "../../assets/images/icons/ODS08.png";
+import iconOds11 from "../../assets/images/icons/ODS11.png";
+import telescopio from "../../assets/images/icons/telescopio.webp";
+import Diogo from "../../assets/images/Diogo.png";
 import Elias from "../../assets/images/Elias.png";
 import Emilly from "../../assets/images/Emilly.png";
 import Gabrielle from "../../assets/images/Gabrielle.png";
 import Gustavo from "../../assets/images/Gustavo.png";
 import Iago from "../../assets/images/Iago.png";
 import Isabella from "../../assets/images/Isabella.png";
-import GlobalStyle from '../../components/globalStyles';
+import LogoVEL from "../../assets/images/VEL.png";
+import GlobalStyle from "../../components/globalStyles";
 import { Container } from "./sobrenosstyle";
+import { setPageSeo } from "../../utils/seo";
 
-const teamMembers = [
+const MVV_BLOCKS = [
   {
-    name: 'Diogo Antonny',
-    role: 'Scrum Master | Desenvolvedor Full-stack',
-    github: 'https://github.com/DiogoJP202',
-    linkedin: 'https://www.linkedin.com/in/diogo-antonny/',
-    img: Diogo
+    id: "missao",
+    icon: iconMissoes,
+    iconAlt: "Ícone representando missão",
+    title: "Missão",
+    items: [
+      "Oferecer uma solução digital clara e fiável para a gestão de entregas, do pedido ao pagamento.",
+      "Reduzir papel e retrabalho nas operações de restaurantes e equipas de logística.",
+      "Ajudar a que a remuneração dos entregadores seja compreendida e acompanhada com transparência.",
+    ],
   },
   {
-    name: 'Elias Andrade',
-    role: 'Adm de Banco de Dados | Desenvolvedor Back-End',
-    github: 'https://github.com/EliasAndrad',
-    linkedin: 'https://www.linkedin.com/in/elias-andrade-/',
-    img: Elias
+    id: "visao",
+    icon: iconVisao,
+    iconAlt: "Ícone representando visão",
+    title: "Visão",
+    items: [
+      "Ser referência em software de gestão de entregas para negócios de todos os portes.",
+      "Crescer com os nossos clientes, com produto estável e evolução contínua.",
+      "Aproximar restaurantes, operações de delivery e entregadores numa mesma experiência simples.",
+    ],
   },
   {
-    name: 'Emilly Freitas',
-    role: 'Desevolvedora Front-end | Designer',
-    github: 'https://github.com/EmillyMLFreitas',
-    linkedin: 'https://www.linkedin.com/in/emillymlfreitas/',
-    img: Emilly
+    id: "valores",
+    icon: iconValores,
+    iconAlt: "Ícone representando valores",
+    title: "Valores",
+    items: [
+      "Transparência, segurança de dados e responsabilidade no tratamento da informação.",
+      "Clareza financeira para quem gere a operação e para quem faz as entregas.",
+      "Respeito pelo tempo de quem trabalha na rua e por quem coordena a equipa.",
+    ],
   },
-  {
-    name: 'Gabrielle Correa',
-    role: 'Desenvolvedora Front-end | Designer',
-    github: 'https://github.com/gabriellecorrea',
-    linkedin: 'https://www.linkedin.com/in/gabriellecorrealeme/',
-    img: Gabrielle
-  },
-  {
-    name: 'Gustavo Teixeira',
-    role: 'Financeiro | Desenvolvedor Front-End',
-    github: 'https://github.com/PettaDev',
-    linkedin: 'https://www.linkedin.com/in/gustavoteixeira2005/',
-    img: Gustavo
-  },
-  {
-    name: 'Iago Matheus',
-    role: 'Desenvolvedor Full-Stack | Designer ',
-    github: 'https://github.com/IagoMat',
-    linkedin: 'https://www.linkedin.com/in/iagomatheus/',
-    img: Iago
-  },
-  {
-    name: 'Isabella Ribas',
-    role: 'PO | Desenvolvadora Full stack',
-    github: 'https://github.com/Isabella2709',
-    linkedin: 'https://www.linkedin.com/in/isabella-ribas-46579b176/',
-    img: Isabella
-  }
 ];
 
-function Login() {
+const SDG_CARDS = [
+  {
+    icon: iconOds09,
+    iconAlt: "Símbolo ODS 9 — Indústria, inovação e infraestruturas",
+    number: "ODS 9",
+    title: "Indústria, inovação e infraestruturas",
+    text: "Digitalização de pedidos e processos, menos dependência de papel e maior resiliência operacional.",
+  },
+  {
+    icon: iconOds08,
+    iconAlt: "Símbolo ODS 8 — Trabalho digno e crescimento econômico",
+    number: "ODS 8",
+    title: "Trabalho digno e crescimento econômico",
+    text: "Ferramentas que apoiam remuneração transparente e formação financeira orientada a entregadores.",
+  },
+  {
+    icon: iconOds11,
+    iconAlt: "Símbolo ODS 11 — Cidades e comunidades sustentáveis",
+    number: "ODS 11",
+    title: "Cidades e comunidades sustentáveis",
+    text: "Logística urbana mais organizada, com menos fricção entre restaurantes, frotas e entregas.",
+  },
+];
+
+const TEAM = [
+  {
+    name: "Diogo Antonny",
+    role: "Scrum Master · Desenvolvedor full-stack",
+    github: "https://github.com/DiogoJP202",
+    linkedin: "https://www.linkedin.com/in/diogo-antonny/",
+    img: Diogo,
+  },
+  {
+    name: "Elias Andrade",
+    role: "Administração de bases de dados · Desenvolvedor back-end",
+    github: "https://github.com/EliasAndrad",
+    linkedin: "https://www.linkedin.com/in/elias-andrade-/",
+    img: Elias,
+  },
+  {
+    name: "Emilly Freitas",
+    role: "Desenvolvedora front-end · Design",
+    github: "https://github.com/EmillyMLFreitas",
+    linkedin: "https://www.linkedin.com/in/emillymlfreitas/",
+    img: Emilly,
+  },
+  {
+    name: "Gabrielle Correa",
+    role: "Desenvolvedora front-end · Design",
+    github: "https://github.com/gabriellecorrea",
+    linkedin: "https://www.linkedin.com/in/gabriellecorrealeme/",
+    img: Gabrielle,
+  },
+  {
+    name: "Gustavo Teixeira",
+    role: "Financeiro · Desenvolvedor front-end",
+    github: "https://github.com/PettaDev",
+    linkedin: "https://www.linkedin.com/in/gustavoteixeira2005/",
+    img: Gustavo,
+  },
+  {
+    name: "Iago Matheus",
+    role: "Desenvolvedor full-stack · Design",
+    github: "https://github.com/IagoMat",
+    linkedin: "https://www.linkedin.com/in/iagomatheus/",
+    img: Iago,
+  },
+  {
+    name: "Isabella Ribas",
+    role: "Product Owner · Desenvolvedora full-stack",
+    github: "https://github.com/Isabella2709",
+    linkedin: "https://www.linkedin.com/in/isabella-ribas-46579b176/",
+    img: Isabella,
+  },
+];
+
+export default function PaginaSobre() {
+  useEffect(() => {
+    setPageSeo({
+      title: "Sobre nós — VEL",
+      description:
+        "Missão, visão, valores e equipa por trás da VEL: plataforma de gestão de entregas para restaurantes e frotas.",
+      htmlLang: "pt-BR",
+    });
+  }, []);
+
   return (
     <Container>
       <GlobalStyle />
-      <div className="container">
-        <div className='imagem-fundo'>
-          <div className='transparencia'>
-          <h1 className='titulo'> Como te ajudamos nas suas entregas</h1>
-            <div className='MVV'>
-              <div className='missao card'>
-                <img src={iconMissoes} alt=""/>
-                <div className="conteudo">
-                  <h1>Nossa Missão</h1>
-                  <li>Proporcionar uma solução eficiente e transparente para a gestão de entregas.</li>
-                  <li>Eliminar o uso de papel.</li>
-                  <li>Garantir remuneração justa e precisa para os entregadores.</li>
-                </div>
-              </div>
-              <div className='visao card'>
-                <img src={iconVisao} alt=""/>
-                <div className='conteudo'>
-                <h1>Nossa Visão</h1>
-                <li>Ser a plataforma líder na gestão de entregas.</li>
-                <li>Excelência no atendimento às necessidades de restaurantes.</li>
-                <li>Excelência no atendimento às necessidades de empresas de entregadores.</li>
-                </div>
-              </div>
-              <div className='valor card'>
-                <img src={iconValores} alt="" />
-                <div className='texto'>
-                  <h1>Nossos Valores</h1>
-                  <li>Transparência, eficiência e segurança são os pilares da atuação.</li>
-                  <li>Importância de uma gestão financeira clara.</li>
-                  <li>Valorização do trabalho dos entregadores.</li>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="sobreRoot">
+        <header className="sobreNav">
+          <Link to="/inicial" className="sobreNavBrand">
+            <img src={LogoVEL} alt="VEL — página inicial" width="56" height="56" decoding="async" />
+            <span>VEL</span>
+          </Link>
+          <nav className="sobreNavActions" aria-label="Navegação secundária">
+            <Link to="/inicial" className="sobreNavLink">
+              Página inicial
+            </Link>
+            <Link to="/login" className="sobreNavCta">
+              Entrar
+            </Link>
+          </nav>
+        </header>
 
-        <div className='ODS'>
-          <h1>O que estamos contribuindo para um desenvolvimento sustentável </h1>
-          <div className='cardODS'>
-            <div className='ODS4'>
-            <img src={iconOds04} alt="" className='iconOds04' />
-              <h1>ODS 09</h1>
+        <main>
+          <section className="sobreHero" aria-labelledby="sobre-hero-title">
+            <div className="sobreHeroInner">
+              <p className="sobreHeroEyebrow">Sobre nós</p>
+              <h1 id="sobre-hero-title">Quem somos e o que nos move</h1>
+              <p className="sobreHeroLead">
+                Somos a equipa por trás da <strong>VEL (Virtual Easy Log)</strong>: uma plataforma pensada para
+                simplificar pedidos, entregadores e visão financeira — do restaurante à rua.
+              </p>
             </div>
-            <div className='ODS8'>
-            <img src={iconOds08} alt="" className='iconOds04' />
-              <h1>ODS 08</h1>
+          </section>
+
+          <section className="mvvSection" aria-labelledby="mvv-heading">
+            <div className="sobreSectionHead">
+              <h2 id="mvv-heading">Missão, visão e valores</h2>
+              <p className="sobreSectionSub">O que prometemos aos clientes e às equipas que usam o produto todos os dias.</p>
             </div>
-            <div className='ODS11'>
-            <img src={iconOds11} alt="" className='iconOds04' />
-              <h1>ODS 11</h1>
+            <div className="mvvGrid">
+              {MVV_BLOCKS.map((block) => (
+                <article key={block.id} className="mvvCard">
+                  <img className="mvvIcon" src={block.icon} alt={block.iconAlt} width="72" height="72" loading="lazy" />
+                  <h3 className="mvvCardTitle">{block.title}</h3>
+                  <ul className="mvvList">
+                    {block.items.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
             </div>
-          </div>
-        </div>
-        <div className="visaoFuturo">
-          <img src={telescopio} alt="Icone de um telescopio" />
-          <div>
-            <h2>Visão de Futuro</h2>
-            <p>     
-              Quanto ao futuro do nosso projeto, planejamos desenvolver parcerias estratégicas com restaurantes e empresas de entregas rápidas para expandir nossa base de clientes e a presença da nossa plataforma em toda a região de território nacional e internacional.
-            </p>
-            <p>
-              Também visamos parcerias com educadores financeiros, assim podemos implementar nosso projeto de finanças pessoais completamente gratuito para os entregadores, que são guerreiros e guerreiras que lutam todos os dias para realizar suas entregas.
-            </p>
-          </div>
-        </div>
-        <div className="team-section">
-          <h1>Nossa Equipe</h1>
-          <div className="team-container">
-            {teamMembers.map((member, index) => (
-              <div className="team-card" key={index}>
-                <img src={member.img} className="team-avatar"/>
-                <h3 className="team-name">{member.name}</h3>
-                <p className="team-role">{member.role}</p>
-                <div className="team-icons">
-                  <a className="team-icon-link" href={member.github} target="_blank" rel="noopener noreferrer"><FaGithub /></a>
-                  <a className="team-icon-link" href={member.linkedin} target="_blank" rel="noopener noreferrer"><FaLinkedin /></a>
-                </div>
+          </section>
+
+          <section className="odsSection" aria-labelledby="ods-heading">
+            <div className="sobreSectionHead">
+              <h2 id="ods-heading">Sustentabilidade e ODS</h2>
+              <p className="sobreSectionSub">
+                Enquadramos o impacto do produto nos{" "}
+                <strong>Objetivos de Desenvolvimento Sustentável</strong> da ONU nas áreas em que a tecnologia da VEL
+                contribui de forma direta.
+              </p>
+            </div>
+            <div className="odsGrid">
+              {SDG_CARDS.map((card) => (
+                <article key={card.number} className="odsCard">
+                  <img src={card.icon} alt={card.iconAlt} className="odsIcon" width="96" height="96" loading="lazy" />
+                  <p className="odsNumber">{card.number}</p>
+                  <h3 className="odsCardTitle">{card.title}</h3>
+                  <p className="odsText">{card.text}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="futureSection" aria-labelledby="future-heading">
+            <div className="futureInner">
+              <img
+                src={telescopio}
+                alt=""
+                className="futureIllustration"
+                width="280"
+                height="280"
+                loading="lazy"
+                decoding="async"
+              />
+              <div className="futureCopy">
+                <h2 id="future-heading">Próximos passos</h2>
+                <p>
+                  Queremos aprofundar <strong>parcerias</strong> com restaurantes e operadores de delivery para
+                  crescer de forma sustentável — primeiro com excelência no território nacional, com vista a
+                  oportunidades internacionais quando o produto e o suporte estiverem preparados.
+                </p>
+                <p>
+                  Estamos também a explorar colaborações com <strong>educadores financeiros</strong>, para reforçar
+                  iniciativas de educação financeira acessíveis a entregadores, alinhadas com a transparência que a
+                  plataforma já procura oferecer no dia a dia.
+                </p>
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          </section>
+
+          <section className="teamSection" aria-labelledby="team-heading">
+            <div className="sobreSectionHead sobreSectionHeadLight">
+              <h2 id="team-heading">Equipa de desenvolvimento</h2>
+              <p className="sobreSectionSub">
+                Quem constrói e mantém a VEL — fale conosco no LinkedIn ou veja o código no GitHub.
+              </p>
+            </div>
+            <div className="teamGrid">
+              {TEAM.map((member) => (
+                <article key={member.name} className="teamCard">
+                  <img
+                    src={member.img}
+                    alt=""
+                    className="teamAvatar"
+                    width="104"
+                    height="104"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <h3 className="teamName">{member.name}</h3>
+                  <p className="teamRole">{member.role}</p>
+                  <div className="teamLinks">
+                    <a
+                      href={member.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="teamIconLink"
+                      aria-label={`GitHub de ${member.name}`}
+                    >
+                      <FaGithub aria-hidden="true" />
+                    </a>
+                    <a
+                      href={member.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="teamIconLink"
+                      aria-label={`LinkedIn de ${member.name}`}
+                    >
+                      <FaLinkedin aria-hidden="true" />
+                    </a>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        </main>
+
+        <footer className="sobreFooter">
+          <Link to="/inicial">← Voltar à página inicial</Link>
+        </footer>
       </div>
     </Container>
   );
 }
-
-export default Login;
